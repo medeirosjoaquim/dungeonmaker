@@ -1,7 +1,8 @@
 <template lang="pug">
 #app
-  .title 
+  .title
     span DungeonMaker
+  button(@click="walk(map)") walk
 
   //- pre {{ map }}
   //- h1 {{JSON.stringify(grid)}}
@@ -11,6 +12,7 @@
         v-for="(col, colIndex) in row",
         v-on:click="setCell(rowIndex, colIndex)"
         :class="map[rowIndex][colIndex]"
+        v-bind:class="{ active:( activeRow === rowIndex && activeCol === colIndex) }"
       )
         span
   .grid__control
@@ -24,7 +26,6 @@
           min="1",
           max="6",
           v-model="cols",
-          v-on:change="updateGrid"
         )
         span {{ cols }}
       div
@@ -34,18 +35,19 @@
           min="1",
           max="6",
           v-model="rows",
-          v-on:change="updateGrid"
         )
         span {{ rows }}
 </template>
 
-<script setup>
-import { ref, onUpdated, onBeforeUpdate, reactive } from "vue";
+<script setup lang="ts">
 
+import { ref, onBeforeUpdate, reactive } from "vue";
 import { makeGrid } from "./grid";
 const cols = ref(1);
 const rows = ref(1);
 let grid = ref(makeGrid(cols.value, rows.value));
+let activeRow = ref(0)
+let activeCol = ref(0)
 const map = reactive([]);
 for (let i = 0; i < rows.value; i++) {
   if (!map[i]) {
@@ -75,6 +77,32 @@ const getCell = (row, col) => {
   const [x, y] = col;
   console.log({ x, y });
 };
+
+const walk = (_2dArray = []) => {
+  let counter = 0
+  let walkerRow =   setInterval(() =>  {
+        activeRow.value = counter
+        let counterCol = 0
+        let walkerCol = setInterval(() => {
+          if (walkerCol === _2dArray[counter].length) {
+            clearInterval(walkerCol)
+          }
+          activeCol.value = counterCol;
+          counterCol++ } , 200)
+        if (counter === (_2dArray.length - 1)) {
+          console.log('bye')
+          clearInterval(walkerRow)
+          return true
+        }
+        counter++
+
+      }
+      , 1000);
+  // counter++
+
+
+
+}
 onBeforeUpdate(() => {
   grid.value = makeGrid(cols.value, rows.value);
   
@@ -204,4 +232,8 @@ body, h1, h2 {
     background-image: url('./assets/grass.png')
     background-size: 50px;
 }
+.active {
+  background-color darkgreen
+}
+
 </style>

@@ -8,6 +8,7 @@
   "dependencies": {
     "pug": "^3.0.2",
     "pug-loader": "^2.4.0",
+    "rxjs": "^7.3.0",
     "stylus": "^0.54.8",
     "vue": "^3.0.5"
   },
