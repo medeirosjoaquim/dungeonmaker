@@ -10,9 +10,9 @@
     .row(v-for="(row, rowIndex) in grid")
       .cell(
         v-for="(col, colIndex) in row",
-        v-on:click="setCell(rowIndex, colIndex)"
-        :class="map[rowIndex][colIndex]"
-        v-bind:class="{ active:( activeRow === rowIndex && activeCol === colIndex) }"
+        v-on:click="setCell(rowIndex, colIndex)",
+        :class="map[rowIndex][colIndex]",
+        v-bind:class="{ active: activeRow === rowIndex && activeCol === colIndex }"
       )
         span
   .grid__control
@@ -21,33 +21,23 @@
     .controllers
       div 
         label.sub-title(for="cols") cols
-        input#cols(
-          type="range",
-          min="1",
-          max="6",
-          v-model="cols",
-        )
+        input#cols(type="range", min="1", max="6", v-model="cols")
         span {{ cols }}
       div
         label.sub-title(for="cols") rows
-        input#rows(
-          type="range",
-          min="1",
-          max="6",
-          v-model="rows",
-        )
+        input#rows(type="range", min="1", max="6", v-model="rows")
         span {{ rows }}
 </template>
 
 <script setup lang="ts">
-
 import { ref, onBeforeUpdate, reactive } from "vue";
 import { makeGrid } from "./grid";
 const cols = ref(1);
 const rows = ref(1);
 let grid = ref(makeGrid(cols.value, rows.value));
-let activeRow = ref(0)
-let activeCol = ref(0)
+let activeRow = ref(0);
+let activeCol = ref(0);
+let isWalking = ref(false);
 const map = reactive([]);
 for (let i = 0; i < rows.value; i++) {
   if (!map[i]) {
@@ -55,13 +45,13 @@ for (let i = 0; i < rows.value; i++) {
   }
   for (let j = 0; j < cols.value; j++) {
     if (!map[i][j]) {
-      map[i][j] = '';
+      map[i][j] = "";
     }
   }
 }
 
 const setCell = (rowIndex, colIndex) => {
-  console.log(map[rowIndex][colIndex])
+  console.log(map[rowIndex][colIndex]);
   if (!map[rowIndex][colIndex]) {
     map[rowIndex][colIndex] = "wall";
   } else if (map[rowIndex][colIndex] === "wall") {
@@ -69,9 +59,9 @@ const setCell = (rowIndex, colIndex) => {
   } else if (map[rowIndex][colIndex] === "door") {
     map[rowIndex][colIndex] = "grass";
   } else {
-    map[rowIndex][colIndex] = ''
+    map[rowIndex][colIndex] = "";
   }
-    console.log(map[rowIndex][colIndex])
+  console.log(map[rowIndex][colIndex]);
 };
 const getCell = (row, col) => {
   const [x, y] = col;
@@ -79,44 +69,40 @@ const getCell = (row, col) => {
 };
 
 const walk = (_2dArray = []) => {
-  let counter = 0
-  let walkerRow =   setInterval(() =>  {
-        activeRow.value = counter
-        let counterCol = 0
-        let walkerCol = setInterval(() => {
-          if (walkerCol === _2dArray[counter].length) {
-            clearInterval(walkerCol)
-          }
-          activeCol.value = counterCol;
-          counterCol++ } , 200)
-        if (counter === (_2dArray.length - 1)) {
-          console.log('bye')
-          clearInterval(walkerRow)
-          return true
-        }
-        counter++
-
-      }
-      , 1000);
-  // counter++
-
-
-
-}
+   if (isWalking.value) {
+     return
+   }
+  isWalking.value = true
+  const coords = _2dArray.map((row: [], rowIndex) =>
+    row.map((col, colIndex) => ([rowIndex, colIndex]))
+  );
+  //const coords = _2dArray.flat()
+  console.log(coords.flat().length)
+  let idx = 0;
+  const doWalk = setInterval(function () {
+    console.log(coords[idx])
+    idx++;
+    
+    if (idx === coords.flat().flat().length) {
+      isWalking.value = false
+      clearInterval(doWalk);
+    }
+  }, 1000);
+};
 onBeforeUpdate(() => {
   grid.value = makeGrid(cols.value, rows.value);
-  
+
   for (let i = 0; i < rows.value; i++) {
-  if (!map[i]) {
-    map[i] = [];
-  }
-  for (let j = 0; j < cols.value; j++) {
-    console.log({i,j})
-    if (!map[i][j]) {
-      map[i][j] = '';
+    if (!map[i]) {
+      map[i] = [];
+    }
+    for (let j = 0; j < cols.value; j++) {
+      console.log({ i, j });
+      if (!map[i][j]) {
+        map[i][j] = "";
+      }
     }
   }
-}
 });
 </script>
 
@@ -170,7 +156,7 @@ body, h1, h2 {
         top: 3rem;
         left: 1.5rem;
         border-left: 2px solid white;
-        height: 1.10rem;
+        height: 1.1rem;
         // width   2px
         // background-color #666
       }
@@ -218,22 +204,25 @@ body, h1, h2 {
   .sub-title {
     margin: 16px;
     font-size: 16px;
-  }  
-}
-.wall {
-    background-image: url('./assets/wall.png')
-    background-size: 50px;
-}
-.door {
-    background-image: url('./assets/door.png')
-    background-size: 50px;
-}
-.grass {
-    background-image: url('./assets/grass.png')
-    background-size: 50px;
-}
-.active {
-  background-color darkgreen
+  }
 }
 
+.wall {
+  background-image: url('./assets/wall.png');
+  background-size: 50px;
+}
+
+.door {
+  background-image: url('./assets/door.png');
+  background-size: 50px;
+}
+
+.grass {
+  background-image: url('./assets/grass.png');
+  background-size: 50px;
+}
+
+.active {
+  background-color: darkgreen;
+}
 </style>
