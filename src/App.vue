@@ -69,34 +69,38 @@ const getCell = (row, col) => {
 };
 
 const walk = (_2dArray = []) => {
-   if (isWalking.value) {
-     return
-   }
-  isWalking.value = true
+  if (isWalking.value) {
+    return;
+  }
+  // isWalking.value = true;
   // const coords = _2dArray.map((row: [], rowIndex) =>
   //   row.map((col, colIndex) => ([rowIndex, colIndex]))
   // );
   //const coords = _2dArray.flat()
-  const coords = {}
-  let countItems = 0
-for (let row = 0 ; row <  _2dArray.length; row++) {
-  coords[row] = {}
-  for (let col = 0; col < _2dArray[row].length; col++) {
-    countItems++
-    const terrain = _2dArray[row][col]
-    coords[row][col] = {row, col, terrain}
-  }
-}
-  console.log({...coords, total: countItems})
-  return
+  let totalItems = 0;
+  let totalRows = 0;
+  let coords = {};
 
+  for (let row = 0; row < _2dArray.length; row++) {
+    coords[`row_${row}`] = {};
+    totalRows++;
+    for (let col = 0; col < _2dArray[row].length; col++) {
+      const terrain = _2dArray[row][col];
+      coords[`row_${row}`][col] = { row, col, terrain };
+      ++totalItems;
+
+    }
+  }
+  coords = { ...coords, totalRows, totalItems };
+  console.log(coords);
+return
   let idx = 0;
   const doWalk = setInterval(function () {
-    console.log(coords[idx])
+    console.log(coords[idx]);
     idx++;
-    
+
     if (idx === coords.flat().flat().length) {
-      isWalking.value = false
+      isWalking.value = false;
       clearInterval(doWalk);
     }
   }, 1000);
